@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String                   @id @default(uuid())
+  name                 String
+  email                String                   @unique
+  passwordHash         String
+  createdAt            DateTime                 @default(now())
+  dailySets            LegacyDailySet[]
+  progress             LegacyWordProgress[]
+  messages             ConversationMessage[]
+  learningProfile      UserLearningProfile?
+  dailyVocabularySets  DailyVocabularySet[]
+  vocabularyProgress   UserVocabularyProgress[]
+  vocabularyReviews    VocabularyReview[]
+  vocabularyFavorites  VocabularyFavorite[]
+  quizSessions         QuizSession[]
+  conversationSessions ConversationSession[]
+  passwordResetTokens  PasswordResetToken[]
+}
+
+model LegacyDailySet {
+  id        String             @id @default(cuid())
+  userId    String
+  date      String
+  createdAt DateTime           @default(now())
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  words     LegacyVocabulary[]
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("DailySet")
+}
+
+model LegacyVocabulary {
+  id                 String              @id @default(cuid())
+  dailySetId         String
+  word               String
+  meaning            String
+  pronunciation      String
+  partOfSpeech       String
+  example            String
+  exampleTranslation String
+  createdAt          DateTime            @default(now())
+  dailySet           LegacyDailySet      @relation(fields: [dailySetId], references: [id], onDelete: Cascade)
+  progress           LegacyWordProgress?
+
+  @@unique([dailySetId, word])
+  @@map("Vocabulary")
+}
+
+model LegacyWordProgress {
+  id             String           @id @default(cuid())
+  userId         String
+  vocabularyId   String           @unique
+  isLearned      Boolean          @default(false)
+  reviewCount    Int              @default(0)
+  nextReviewAt   DateTime?
+  lastReviewedAt DateTime?
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary     LegacyVocabulary @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+
+  @@index([userId, nextReviewAt])
+  @@map("WordProgress")
+}
+
+model ConversationMessage {
+  id        String               @id @default(cuid())
+  userId    String
+  role      String
+  content   String
+  createdAt DateTime             @default(now())
+  sessionId String?
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session   ConversationSession? @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([sessionId, createdAt])
+}
+
+model UserLearningProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  timezone  String   @default("Asia/Jakarta")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DailyVocabularySet {
+  id        String                 @id @default(uuid())
+  userId    String
+  localDate String
+  timezone  String
+  createdAt DateTime               @default(now())
+  user      User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entries   DailyVocabularyEntry[]
+
+  @@unique([userId, localDate])
+  @@index([userId, localDate])
+}
+
+model Vocabulary {
+  id                 String                   @id @default(uuid())
+  term               String                   @unique
+  word               String
+  meaning            String
+  pronunciation      String
+  partOfSpeech       String
+  example            String
+  exampleTranslation String
+  createdAt          DateTime                 @default(now())
+  dailyEntries       DailyVocabularyEntry[]
+  userProgress       UserVocabularyProgress[]
+  reviews            VocabularyReview[]
+  favorites          VocabularyFavorite[]
+  quizQuestions      QuizQuestion[]           @relation("CorrectVocabulary")
+
+  @@index([word])
+  @@map("GlobalVocabulary")
+}
+
+model DailyVocabularyEntry {
+  id           String             @id @default(uuid())
+  dailySetId   String
+  vocabularyId String
+  position     Int
+  createdAt    DateTime           @default(now())
+  dailySet     DailyVocabularySet @relation(fields: [dailySetId], references: [id], onDelete: Cascade)
+  vocabulary   Vocabulary         @relation(fields: [vocabularyId], references: [id], onDelete: Restrict)
+
+  @@unique([dailySetId, vocabularyId])
+  @@unique([dailySetId, position])
+  @@index([vocabularyId])
+}
+
+model UserVocabularyProgress {
+  id             String              @id @default(uuid())
+  userId         String
+  vocabularyId   String
+  isLearned      Boolean             @default(false)
+  reviewCount    Int                 @default(0)
+  nextReviewAt   DateTime?
+  lastReviewedAt DateTime?
+  learnedAt      DateTime?
+  updatedAt      DateTime            @updatedAt
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary     Vocabulary          @relation(fields: [vocabularyId], references: [id], onDelete: Restrict)
+  reviews        VocabularyReview[]
+  favorite       VocabularyFavorite?
+
+  @@unique([userId, vocabularyId])
+  @@index([userId, nextReviewAt])
+  @@index([userId, isLearned])
+}
+
+model VocabularyReview {
+  id           String                 @id @default(uuid())
+  userId       String
+  vocabularyId String
+  remembered   Boolean
+  localDate    String
+  reviewedAt   DateTime               @default(now())
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary   Vocabulary             @relation(fields: [vocabularyId], references: [id], onDelete: Restrict)
+  progress     UserVocabularyProgress @relation(fields: [userId, vocabularyId], references: [userId, vocabularyId], onDelete: Cascade)
+
+  @@index([userId, localDate])
+  @@index([userId, reviewedAt])
+}
+
+model VocabularyFavorite {
+  id           String                 @id @default(uuid())
+  userId       String
+  vocabularyId String
+  createdAt    DateTime               @default(now())
+  user         User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  vocabulary   Vocabulary             @relation(fields: [vocabularyId], references: [id], onDelete: Cascade)
+  progress     UserVocabularyProgress @relation(fields: [userId, vocabularyId], references: [userId, vocabularyId], onDelete: Cascade)
+
+  @@unique([userId, vocabularyId])
+  @@index([userId, createdAt])
+}
+
+model QuizSession {
+  id          String         @id @default(uuid())
+  userId      String
+  status      String         @default("in_progress")
+  score       Int?
+  total       Int
+  createdAt   DateTime       @default(now())
+  completedAt DateTime?
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions   QuizQuestion[]
+  answers     QuizAnswer[]
+
+  @@index([userId, createdAt])
+}
+
+model QuizQuestion {
+  id                String      @id @default(uuid())
+  quizSessionId     String
+  vocabularyId      String
+  prompt            String
+  optionsJson       String
+  position          Int
+  quizSession       QuizSession @relation(fields: [quizSessionId], references: [id], onDelete: Cascade)
+  correctVocabulary Vocabulary  @relation("CorrectVocabulary", fields: [vocabularyId], references: [id], onDelete: Restrict)
+  answer            QuizAnswer?
+
+  @@unique([quizSessionId, position])
+  @@index([vocabularyId])
+}
+
+model QuizAnswer {
+  id            String       @id @default(uuid())
+  quizSessionId String
+  questionId    String       @unique
+  selectedTerm  String
+  isCorrect     Boolean
+  answeredAt    DateTime     @default(now())
+  quizSession   QuizSession  @relation(fields: [quizSessionId], references: [id], onDelete: Cascade)
+  question      QuizQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@index([quizSessionId])
+}
+
+model ConversationSession {
+  id        String                @id @default(uuid())
+  userId    String
+  title     String                @default("English practice")
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  user      User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  ConversationMessage[]
+
+  @@index([userId, updatedAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
