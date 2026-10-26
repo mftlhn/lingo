@@ -78,6 +78,69 @@ export function AuthForm({ mode, resetSuccess = false }: { mode: "login" | "regi
   });
 
   return (
+    // <div>
+    //   <p className="text-sm font-medium text-[#5956d6]">{isRegister ? "Mulai perjalananmu" : "Selamat datang kembali"}</p>
+    //   <h1 className="mt-2 text-3xl font-semibold tracking-tight">{isRegister ? "Buat akun gratis" : "Masuk ke akunmu"}</h1>
+    //   <p className="mt-2 text-sm text-[#7c879a]">
+    //     {isRegister ? "Sedikit latihan setiap hari bisa membawa perubahan besar." : "Lanjutkan perjalanan belajar bahasa Inggrismu."}
+    //   </p>
+
+    //   {resetSuccess && <div role="status" className="alert alert-success mt-6 py-3 text-sm">Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi barumu.</div>}
+    //   {serverError && <div role="alert" className="alert alert-error mt-6 py-3 text-sm">{serverError}</div>}
+
+    //   <form onSubmit={onSubmit} className="mt-8 space-y-6 grid-cols-1 gap-3">
+    //     {isRegister && (
+    //       <label className="form-control w-full">
+    //         <span className="label-text mb-2 font-medium">Nama lengkap</span>
+    //         <input {...register("name")} autoComplete="name" placeholder="Nama kamu" className="input input-bordered w-full bg-white" />
+    //         {errors.name && <span className="mt-1 text-xs text-error">{errors.name.message}</span>}
+    //       </label>
+    //     )}
+    //     <label className="form-control w-full">
+    //       <span className="label-text mb-2 font-medium">Email</span>
+    //       <input {...register("email")} type="email" autoComplete="email" placeholder="nama@email.com" className="input input-bordered w-full bg-white" />
+    //       {errors.email && <span className="mt-1 text-xs text-error">{errors.email.message}</span>}
+    //     </label>
+    //     <label className="form-control w-full">
+    //       <span className="label-text mb-2 font-medium">Kata sandi</span>
+    //       <span className="relative block w-full">
+    //         <input {...register("password")} type={showPassword ? "text" : "password"} autoComplete={isRegister ? "new-password" : "current-password"} placeholder="Minimal 8 karakter" className="input input-bordered w-full bg-white pr-12" />
+    //         <button type="button" aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"} onClick={() => setShowPassword((value) => !value)} className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-[#7c879a] transition-colors hover:bg-[#f4f3ff] hover:text-[#5956d6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5956d6]">
+    //           {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+    //         </button>
+    //       </span>
+    //       {errors.password && <span className="mt-1 text-xs text-error">{errors.password.message}</span>}
+    //     </label>
+    //     {isRegister ? (
+    //       <>
+    //         <label className="form-control w-full">
+    //           <span className="label-text mb-2 font-medium">Konfirmasi kata sandi</span>
+    //           <input {...register("passwordConfirm")} type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="Ulangi kata sandi" className="input input-bordered w-full bg-white" />
+    //           {errors.passwordConfirm && <span className="mt-1 text-xs text-error">{errors.passwordConfirm.message}</span>}
+    //         </label>
+    //         <label className="flex cursor-pointer items-start gap-3 text-sm leading-5 text-[#68748a]">
+    //           <input {...register("acceptedTerms")} type="checkbox" className="checkbox checkbox-primary checkbox-sm mt-0.5" />
+    //           <span>Saya menyetujui ketentuan penggunaan dan kebijakan privasi.</span>
+    //         </label>
+    //         {errors.acceptedTerms && <span className="-mt-4 block text-xs text-error">{errors.acceptedTerms.message}</span>}
+    //       </>
+    //     ) : (
+    //       <div className="-mt-2 text-right">
+    //         <Link className="text-sm font-medium text-[#5956d6] hover:underline" href="/forgot-password">Lupa kata sandi?</Link>
+    //       </div>
+    //     )}
+    //     <button className="btn w-full border-0 bg-[#5956d6] text-white hover:bg-[#4744bf]" disabled={busy}>
+    //       {busy && <span className="loading loading-spinner loading-sm" />}
+    //       {isRegister ? "Buat akun" : "Masuk"}
+    //     </button>
+    //   </form>
+    //   <p className="mt-7 text-center text-sm text-[#7c879a]">
+    //     {isRegister ? "Sudah punya akun?" : "Belum punya akun?"}{" "}
+    //     <Link className="font-semibold text-[#5956d6] hover:underline" href={isRegister ? "/login" : "/register"}>
+    //       {isRegister ? "Masuk" : "Daftar gratis"}
+    //     </Link>
+    //   </p>
+    // </div>
     <div>
       <p className="text-sm font-medium text-[#5956d6]">{isRegister ? "Mulai perjalananmu" : "Selamat datang kembali"}</p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">{isRegister ? "Buat akun gratis" : "Masuk ke akunmu"}</h1>
@@ -88,7 +151,8 @@ export function AuthForm({ mode, resetSuccess = false }: { mode: "login" | "regi
       {resetSuccess && <div role="status" className="alert alert-success mt-6 py-3 text-sm">Kata sandi berhasil diperbarui. Silakan masuk dengan kata sandi barumu.</div>}
       {serverError && <div role="alert" className="alert alert-error mt-6 py-3 text-sm">{serverError}</div>}
 
-      <form onSubmit={onSubmit} className="mt-8 space-y-5">
+      {/* Menggunakan flex flex-col gap-5 agar jarak antar input konsisten dan rapi */}
+      <form onSubmit={onSubmit} className="mt-8 flex flex-col gap-5">
         {isRegister && (
           <label className="form-control w-full">
             <span className="label-text mb-2 font-medium">Nama lengkap</span>
@@ -96,21 +160,24 @@ export function AuthForm({ mode, resetSuccess = false }: { mode: "login" | "regi
             {errors.name && <span className="mt-1 text-xs text-error">{errors.name.message}</span>}
           </label>
         )}
+
         <label className="form-control w-full">
           <span className="label-text mb-2 font-medium">Email</span>
           <input {...register("email")} type="email" autoComplete="email" placeholder="nama@email.com" className="input input-bordered w-full bg-white" />
           {errors.email && <span className="mt-1 text-xs text-error">{errors.email.message}</span>}
         </label>
+
         <label className="form-control w-full">
           <span className="label-text mb-2 font-medium">Kata sandi</span>
-          <span className="relative">
+          <span className="relative block w-full">
             <input {...register("password")} type={showPassword ? "text" : "password"} autoComplete={isRegister ? "new-password" : "current-password"} placeholder="Minimal 8 karakter" className="input input-bordered w-full bg-white pr-12" />
-            <button type="button" aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"} onClick={() => setShowPassword((value) => !value)} className="btn btn-ghost btn-square btn-sm absolute right-1 top-1 text-[#7c879a]">
+            <button type="button" aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"} onClick={() => setShowPassword((value) => !value)} className="absolute right-2 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-lg text-[#7c879a] transition-colors hover:bg-[#f4f3ff] hover:text-[#5956d6] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5956d6]">
               {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
           </span>
           {errors.password && <span className="mt-1 text-xs text-error">{errors.password.message}</span>}
         </label>
+
         {isRegister ? (
           <>
             <label className="form-control w-full">
@@ -118,22 +185,27 @@ export function AuthForm({ mode, resetSuccess = false }: { mode: "login" | "regi
               <input {...register("passwordConfirm")} type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="Ulangi kata sandi" className="input input-bordered w-full bg-white" />
               {errors.passwordConfirm && <span className="mt-1 text-xs text-error">{errors.passwordConfirm.message}</span>}
             </label>
-            <label className="flex cursor-pointer items-start gap-3 text-sm leading-5 text-[#68748a]">
-              <input {...register("acceptedTerms")} type="checkbox" className="checkbox checkbox-primary checkbox-sm mt-0.5" />
-              <span>Saya menyetujui ketentuan penggunaan dan kebijakan privasi.</span>
-            </label>
-            {errors.acceptedTerms && <span className="-mt-4 block text-xs text-error">{errors.acceptedTerms.message}</span>}
+            
+            <div className="flex flex-col gap-1">
+              <label className="flex cursor-pointer items-start gap-3 text-sm leading-5 text-[#68748a]">
+                <input {...register("acceptedTerms")} type="checkbox" className="checkbox checkbox-primary checkbox-sm mt-0.5" />
+                <span>Saya menyetujui ketentuan penggunaan dan kebijakan privasi.</span>
+              </label>
+              {errors.acceptedTerms && <span className="text-xs text-error">{errors.acceptedTerms.message}</span>}
+            </div>
           </>
         ) : (
           <div className="-mt-2 text-right">
             <Link className="text-sm font-medium text-[#5956d6] hover:underline" href="/forgot-password">Lupa kata sandi?</Link>
           </div>
         )}
+
         <button className="btn w-full border-0 bg-[#5956d6] text-white hover:bg-[#4744bf]" disabled={busy}>
           {busy && <span className="loading loading-spinner loading-sm" />}
           {isRegister ? "Buat akun" : "Masuk"}
         </button>
       </form>
+
       <p className="mt-7 text-center text-sm text-[#7c879a]">
         {isRegister ? "Sudah punya akun?" : "Belum punya akun?"}{" "}
         <Link className="font-semibold text-[#5956d6] hover:underline" href={isRegister ? "/login" : "/register"}>
