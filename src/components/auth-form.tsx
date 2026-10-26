@@ -48,9 +48,13 @@ export function AuthForm({ mode, resetSuccess = false }: { mode: "login" | "regi
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...values, name: values.name?.trim() }),
         });
-        const result = (await response.json()) as { error?: string };
+        const result = (await response.json().catch(() => null)) as { error?: string } | null;
         if (!response.ok) {
-          setServerError(result.error ?? "Pendaftaran belum berhasil.");
+          setServerError(result?.error ?? "Pendaftaran belum berhasil. Periksa konfigurasi database server.");
+          return;
+        }
+        if (!result) {
+          setServerError("Server mengembalikan respons yang tidak valid. Silakan coba lagi.");
           return;
         }
       }

@@ -14,8 +14,8 @@ export async function POST(request: Request) {
   }
 
   const email = parsed.data.email.toLowerCase();
-  const passwordHash = await hash(parsed.data.password, 12);
   try {
+    const passwordHash = await hash(parsed.data.password, 12);
     await db.user.create({
       data: {
         name: parsed.data.name,
@@ -35,7 +35,11 @@ export async function POST(request: Request) {
         { status: 409 },
       );
     }
-    throw error;
+    console.error("Registration failed:", error);
+    return NextResponse.json(
+      { error: "Pendaftaran gagal karena ada masalah pada server. Silakan coba lagi nanti." },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ ok: true }, { status: 201 });
