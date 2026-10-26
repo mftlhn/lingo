@@ -38,7 +38,7 @@ export async function POST(request: Request) {
       errorCode: errorCode ?? "UNKNOWN",
     });
     return NextResponse.json(
-      { error: getRegistrationErrorMessage(errorCode) },
+      { error: getRegistrationErrorMessage(errorCode, error) },
       { status: 500 },
     );
   }
@@ -52,7 +52,11 @@ function getPrismaErrorCode(error: unknown) {
   return null;
 }
 
-function getRegistrationErrorMessage(errorCode: string | null) {
+function getRegistrationErrorMessage(errorCode: string | null, error: unknown) {
+  if (error instanceof Error && /unable to open the database file/i.test(error.message)) {
+    return "Server masih memakai database SQLite yang tidak tersedia di Vercel. Deploy versi terbaru yang menggunakan PostgreSQL Supabase.";
+  }
+
   switch (errorCode) {
     case "P1000":
     case "P1010":
