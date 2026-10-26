@@ -36,8 +36,8 @@ export function ForgotPasswordForm() {
       <p className="mt-2 text-sm leading-6 text-[#7c879a]">Masukkan email akunmu. Jika email reset belum dikonfigurasi, kami akan memberi tahu dengan jelas.</p>
       {error && <div role="alert" className="alert alert-error mt-6 text-sm">{error}</div>}
       {message && <div role="status" className="alert alert-success mt-6 text-sm">{message}</div>}
-      <form onSubmit={submit} className="mt-7 space-y-5">
-        <label className="form-control">
+      <form onSubmit={submit} className="mt-7 flex flex-col gap-5">
+        <label className="form-control flex flex-col">
           <span className="label-text mb-2 font-medium">Email</span>
           <input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" className="input input-bordered bg-white" placeholder="nama@email.com" />
         </label>
