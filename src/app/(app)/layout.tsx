@@ -8,7 +8,8 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login");
   const profile = await db.userLearningProfile.findUnique({
     where: { userId: session.user.id },
-    select: { timezone: true },
+    select: { timezone: true, placementRequired: true },
   });
+  if (profile?.placementRequired) redirect("/placement");
   return <AppShell name={session.user.name ?? "Learner"} email={session.user.email ?? ""} timezone={profile?.timezone ?? "Asia/Jakarta"}>{children}</AppShell>;
 }

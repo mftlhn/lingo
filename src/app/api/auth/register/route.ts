@@ -24,7 +24,7 @@ export async function POST(request: Request) {
         name: parsed.data.name,
         email,
         passwordHash,
-        learningProfile: { create: { timezone: "Asia/Jakarta" } },
+        learningProfile: { create: { timezone: "Asia/Jakarta", placementRequired: true } },
       },
     });
   } catch (error) {

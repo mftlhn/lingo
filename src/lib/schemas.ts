@@ -67,6 +67,34 @@ export const generatedVocabularySchema = z.object({
     .length(10),
 });
 
+export const generatedGrammarSchema = z.object({
+  questions: z.array(z.object({
+    topic: z.string().trim().min(2).max(100),
+    rule: z.string().trim().min(10).max(400),
+    example: z.string().trim().min(3).max(300),
+    translation: z.string().trim().min(3).max(300),
+    prompt: z.string().trim().min(5).max(300),
+    options: z.array(z.string().trim().min(1).max(150)).length(3),
+    answer: z.string().trim().min(1).max(150),
+    explanation: z.string().trim().min(5).max(300),
+  })).length(5),
+});
+
+export const grammarAttemptSchema = z.object({
+  dailySetId: z.string().uuid(),
+  answers: z.array(z.object({
+    questionId: z.string().uuid(),
+    selectedOption: z.string().trim().min(1).max(150),
+  })).length(5),
+});
+
+export const placementSubmissionSchema = z.object({
+  answers: z.array(z.object({
+    questionIndex: z.number().int().min(0).max(14),
+    selectedOption: z.number().int().min(0).max(3),
+  })).length(15),
+});
+
 export const reviewSchema = z.object({
   remembered: z.boolean(),
 });

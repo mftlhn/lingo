@@ -25,6 +25,8 @@ model User {
   quizSessions         QuizSession[]
   conversationSessions ConversationSession[]
   passwordResetTokens  PasswordResetToken[]
+  grammarDailySets     GrammarDailySet[]
+  grammarAttempts      GrammarAttempt[]
 }
 
 model LegacyDailySet {
@@ -88,12 +90,15 @@ model ConversationMessage {
 }
 
 model UserLearningProfile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  timezone  String   @default("Asia/Jakarta")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  timezone             String    @default("Asia/Jakarta")
+  learningLevel        String    @default("BEGINNER")
+  placementRequired    Boolean   @default(false)
+  placementCompletedAt DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model DailyVocabularySet {
@@ -256,4 +261,65 @@ model PasswordResetToken {
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, expiresAt])
+}
+
+model GrammarDailySet {
+  id        String            @id @default(uuid())
+  userId    String
+  localDate String
+  timezone  String
+  level     String
+  createdAt DateTime          @default(now())
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questions GrammarQuestion[]
+  attempts  GrammarAttempt[]
+
+  @@unique([userId, localDate])
+  @@index([userId, localDate])
+}
+
+model GrammarQuestion {
+  id          String          @id @default(uuid())
+  dailySetId  String
+  position    Int
+  topic       String
+  rule        String
+  example     String
+  translation String
+  prompt      String
+  optionsJson String
+  answer      String
+  explanation String
+  dailySet    GrammarDailySet @relation(fields: [dailySetId], references: [id], onDelete: Cascade)
+  answers     GrammarAnswer[]
+
+  @@unique([dailySetId, position])
+}
+
+model GrammarAttempt {
+  id          String          @id @default(uuid())
+  userId      String
+  dailySetId  String
+  score       Int
+  total       Int
+  completedAt DateTime        @default(now())
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailySet    GrammarDailySet @relation(fields: [dailySetId], references: [id], onDelete: Cascade)
+  answers     GrammarAnswer[]
+
+  @@index([userId, completedAt])
+  @@index([dailySetId, completedAt])
+}
+
+model GrammarAnswer {
+  id             String          @id @default(uuid())
+  attemptId      String
+  questionId     String
+  selectedOption String
+  isCorrect      Boolean
+  attempt        GrammarAttempt  @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question       GrammarQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
 }

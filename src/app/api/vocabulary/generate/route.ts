@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "../../../../../auth";
 import { db, withDatabaseRetry } from "@/lib/db";
 import { getLocalDate } from "@/lib/date";
-import { getGeminiClient, getGeminiModel } from "@/lib/gemini";
+import { generateGeminiContent, getGeminiClient } from "@/lib/gemini";
 import { generatedVocabularySchema } from "@/lib/schemas";
 
 export async function POST() {
@@ -36,8 +36,7 @@ export async function POST() {
   });
   const previousWordSet = new Set(previousWords.map((item) => normalizeTerm(item.word)));
   try {
-    const completion = await gemini.models.generateContent({
-      model: getGeminiModel(),
+    const completion = await generateGeminiContent({
       contents: `Create today's fresh vocabulary. Excluded words: ${previousWords.map((item) => item.word).join(", ") || "none"}`,
       config: {
         temperature: 0.8,

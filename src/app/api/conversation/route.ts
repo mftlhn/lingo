@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "../../../../auth";
 import { db } from "@/lib/db";
-import { getGeminiClient, getGeminiModel } from "@/lib/gemini";
+import { generateGeminiContent, getGeminiClient } from "@/lib/gemini";
 import { conversationSchema } from "@/lib/schemas";
 
 export async function POST(request: Request) {
@@ -35,8 +35,7 @@ export async function POST(request: Request) {
     take: 12,
   });
   try {
-    const completion = await gemini.models.generateContent({
-      model: getGeminiModel(),
+    const completion = await generateGeminiContent({
       contents: [
         ...history.reverse().map((message) => ({
           role: message.role === "assistant" ? "model" : "user",
